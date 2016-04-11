@@ -17,7 +17,7 @@ ros::Publisher detected,ready,moved;
 
 void rfidCallback(const std_msgs::String &msg)
 {
-	int ptr[4];
+	int ptr[5];
 	char message[100];
 	strcpy(message,msg.data.c_str());
 
@@ -25,7 +25,7 @@ void rfidCallback(const std_msgs::String &msg)
 	int pos = 0;
 	int parse = 0;
 	ptr[0] = 0;
-	while (message[pos]!=0 && parse < 3)
+	while (message[pos]!=0 && parse < 4)
 	{
 		if (message[pos] == ':') 
 		{
@@ -36,10 +36,11 @@ void rfidCallback(const std_msgs::String &msg)
 	}
 
 	//get data and add them to the TAG model
-	int strength = 	atoi(&message[ptr[1]]);
-	int phase = 	atoi(&message[ptr[2]]);
-	int frequency = atoi(&message[ptr[3]]);
-	float result = models.addMeasurement(message,strength,frequency,phase);
+	int strength = 	atoi(&message[ptr[2]]);
+	int phase = 	atoi(&message[ptr[3]]);
+	int frequency = atoi(&message[ptr[4]]);
+	float result = models.addMeasurement(&message[ptr[1]],strength,frequency,phase);
+	//printf("Tag: %s Strength: %i Freq: %i Phase: %i\n",&message[ptr[1]],strength,frequency,phase);
 
 	//does the model report anything ?
 	ETagEvent event = models.readEvent(message);
